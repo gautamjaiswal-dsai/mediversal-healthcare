@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Specialties | Mediversal Healthcare</title>
+<meta name="description" content="Explore all medical, surgical, diagnostic and emergency specialties across the Mediversal Healthcare network.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main id="main-content">
+  <section class="section">
+    <div class="container">
+      <nav class="breadcrumb"><a href="index.html">Home</a> / <span>Specialties</span></nav>
+      <div class="section-head left" style="margin-bottom:40px;">
+        <span class="eyebrow">Specialties</span>
+        <h1>Every Specialty, One Trusted Network</h1>
+        <p>From medical sciences to surgical and diagnostic care, find the right specialist across Mediversal Healthcare.</p>
+      </div>
+      <div id="groups"></div>
+    </div>
+  </section>
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+mountChrome();
+document.getElementById('groups').innerHTML = SPECIALTY_GROUPS.map(g => `
+  <div style="margin-bottom:48px;">
+    <h3 style="border-bottom:2px solid var(--line);padding-bottom:12px;">${g.group}</h3>
+    <div class="specialty-grid" style="margin-top:24px;">
+      ${g.items.map(id => {
+        const s = specialtyById(id);
+        if(!s) return '';
+        return `<div class="specialty-card">
+          <span class="sc-icon">${icon(s.icon,22)}</span>
+          <h4>${s.name}</h4>
+          <p>${s.short}</p>
+          <div class="sc-links">
+            <a href="specialty-detail.html?id=${s.id}">Learn More</a>
+            <a href="doctors.html?specialty=${s.id}">Find a Doctor</a>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>
+`).join('');
+</script>
+</body>
+</html>

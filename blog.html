@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Health Insights | Mediversal Healthcare</title>
+<meta name="description" content="Health articles and insights from Mediversal Healthcare specialists.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main id="main-content">
+  <section class="section">
+    <div class="container">
+      <nav class="breadcrumb"><a href="index.html">Home</a> / <span>Health Insights</span></nav>
+      <div class="section-head left" style="margin-bottom:36px;">
+        <span class="eyebrow">Health Insights</span>
+        <h1>Articles from Our Specialists</h1>
+        <p>Practical, medically-reviewed guidance across the conditions we treat most.</p>
+      </div>
+      <div class="tag-list" id="cat-filter" style="margin-bottom:36px;"></div>
+      <div class="empty-state">
+        <h4>Article library coming soon</h4>
+        <p>This section is ready for medically-reviewed articles managed through the CMS — categorized by Heart Health, Orthopedic Health, Brain & Neurology, Digestive Health, Kidney Health, Women's Health, Child Health, Diabetes, Respiratory Health, Mental Health and Preventive Care, each with author, medical reviewer and last-reviewed date.</p>
+      </div>
+    </div>
+  </section>
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+mountChrome();
+document.getElementById('cat-filter').innerHTML = [
+  'Heart Health','Orthopedic Health','Brain & Neurology','Digestive Health','Kidney Health',
+  "Women's Health",'Child Health','Diabetes','Respiratory Health','Mental Health','Preventive Care'
+].map(c => `<span class="tag-chip">${c}</span>`).join('');
+</script>
+</body>
+</html>

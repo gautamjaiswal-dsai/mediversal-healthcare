@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Specialty | Mediversal Healthcare</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main id="main-content">
+  <section class="section">
+    <div class="container" id="spec-container"></div>
+  </section>
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+mountChrome();
+const params = new URLSearchParams(location.search);
+const s = specialtyById(params.get('id')) || SPECIALTIES[0];
+document.getElementById('page-title').textContent = `${s.name} | Mediversal Healthcare`;
+const docs = doctorsBySpecialty(s.id);
+
+document.getElementById('spec-container').innerHTML = `
+  <nav class="breadcrumb"><a href="index.html">Home</a> / <a href="specialties.html">Specialties</a> / <span>${s.name}</span></nav>
+  <div style="display:flex;gap:16px;align-items:center;margin-bottom:12px;">
+    <span class="sc-icon" style="width:56px;height:56px;">${icon(s.icon,26)}</span>
+    <h1 style="margin:0;">${s.name}</h1>
+  </div>
+  <p style="max-width:640px;font-size:1.05rem;">${s.short}</p>
+
+  <div class="two-col" style="margin-top:32px;">
+    <div>
+      <h3>Overview</h3>
+      <p>The ${s.name} department at Mediversal Healthcare brings together experienced specialists and modern diagnostic and treatment facilities to manage a wide range of conditions with a patient-first approach.</p>
+
+      <h3>Meet Our Specialists</h3>
+      ${docs.length ? `
+      <div class="doctor-grid">
+        ${docs.map(d => `
+          <div class="doctor-card">
+            <div class="dc-photo"><div class="dc-avatar-fallback">${initials(d.name)}</div></div>
+            <div class="dc-body">
+              <h4>${d.name}</h4>
+              <div class="dc-role">${d.designation}</div>
+              <div class="dc-actions">
+                <a href="doctor-profile.html?id=${d.id}" class="btn btn-ghost btn-sm">View Profile</a>
+                <a href="appointment.html?doctor=${d.id}" class="btn btn-primary btn-sm">Book</a>
+              </div>
+            </div>
+          </div>`).join('')}
+      </div>` : `<div class="empty-state"><h4>Specialist listing coming soon</h4><p>This department's specialist roster is being updated. Please contact the hospital for details.</p></div>`}
+
+      <h3 style="margin-top:36px;">Frequently Asked Questions</h3>
+      <div>
+        <div style="border-bottom:1px solid var(--line);padding:14px 0;"><strong>How do I book a consultation in ${s.name}?</strong><p style="margin:6px 0 0;">Use the Book Appointment button on this page, or call the hospital directly.</p></div>
+        <div style="border-bottom:1px solid var(--line);padding:14px 0;"><strong>Is this department available 24/7?</strong><p style="margin:6px 0 0;">Outpatient consultations follow scheduled hours; emergency cases are handled through Emergency & Trauma Care.</p></div>
+      </div>
+    </div>
+    <aside>
+      <div class="step-panel" style="position:sticky;top:100px;">
+        <h4>Book Appointment</h4>
+        <p style="font-size:0.9rem;">Consult a ${s.name} specialist at Mediversal Healthcare.</p>
+        <a href="appointment.html?specialty=${s.id}" class="btn btn-primary btn-block">Book Appointment</a>
+        <a href="tel:0612-3500111" class="btn btn-ghost btn-block" style="margin-top:10px;">${icon('phone',16)} Emergency</a>
+      </div>
+    </aside>
+  </div>
+`;
+</script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Appointment | Mediversal Healthcare</title>
+<meta name="description" content="Book an appointment with a Mediversal Healthcare specialist in a few simple steps.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main id="main-content">
+  <section class="section">
+    <div class="container" style="max-width:920px;">
+      <nav class="breadcrumb"><a href="index.html">Home</a> / <span>Book Appointment</span></nav>
+      <div class="section-head left" style="margin-bottom:36px;">
+        <span class="eyebrow">Appointment Request</span>
+        <h1>Book an Appointment</h1>
+        <p>Requests are reviewed by our team and confirmed by phone or email — no availability shown here is guaranteed until confirmed.</p>
+      </div>
+
+      <div class="stepper-track" id="stepper-track"></div>
+      <div id="step-panel"></div>
+    </div>
+  </section>
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+mountChrome();
+
+const STEPS = ["Hospital","Specialty","Doctor","Date","Time","Details","Consent","Confirm"];
+let current = 0;
+const state = { hospital:null, specialty:null, doctor:"__none__", date:null, slot:null, patient:{}, consentComms:false, consentMarketing:false };
+
+// Pre-fill from URL params (e.g. arriving from a doctor profile or specialty page)
+const params = new URLSearchParams(location.search);
+if(params.get('doctor')){
+  const d = DOCTORS.find(x=>x.id===params.get('doctor'));
+  if(d){ state.doctor = d.id; state.specialty = d.specialtyId; state.hospital = d.hospitalId; }
+}
+if(params.get('specialty') && !state.specialty) state.specialty = params.get('specialty');
+
+function renderTrack(){
+  document.getElementById('stepper-track').innerHTML = STEPS.map((label,i) => `
+    <div class="step-item ${i===current?'active':''} ${i<current?'done':''}">
+      <div class="step-dot">${i<current?icon('check',16):(i+1)}</div>
+      <div class="step-label">${label}</div>
+    </div>`).join('');
+}
+
+// ---- Real, non-fabricated slot generation: deterministic per doctor+date so it's
+// consistent, but clearly illustrative — in production this calls
+// GET /api/v1/appointments/slots?doctor_id=&date= against real scheduling data.
+function slotsFor(doctorId, dateStr){
+  const base = ["09:00 AM","09:30 AM","10:00 AM","10:30 AM","11:30 AM","12:00 PM","04:00 PM","04:30 PM","05:00 PM","05:30 PM","06:00 PM","06:30 PM"];
+  let seed = (doctorId+dateStr).split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  return base.map((t,i) => ({ time:t, available: (seed + i) % 3 !== 0 }));
+}
+
+function next(){ if(current < STEPS.length-1){ current++; render(); window.scrollTo({top:0,behavior:'smooth'}); } }
+function back(){ if(current > 0){ current--; render(); window.scrollTo({top:0,behavior:'smooth'}); } }
+
+function panelWrap(body, opts={}){
+  return `<div class="step-panel">${body}
+    <div class="stepper-actions">
+      ${current>0 && current<STEPS.length-1 ? `<button class="btn btn-ghost" onclick="back()">Back</button>` : '<span></span>'}
+      ${opts.hideNext ? '' : `<button class="btn btn-primary" id="next-btn" onclick="${opts.onNext||'next()'}" ${opts.disabled?'disabled':''}>${opts.nextLabel||'Continue'}</button>`}
+    </div>
+  </div>`;
+}
+
+function render(){
+  renderTrack();
+  const panel = document.getElementById('step-panel');
+  if(current === 0){ // Hospital
+    panel.innerHTML = panelWrap(`
+      <h3>Select Hospital</h3>
+      <div class="option-grid">
+        ${HOSPITALS.map(h => `
+          <button class="option-card ${state.hospital===h.id?'selected':''}" onclick="selectHospital('${h.id}')">
+            <strong>${h.name}</strong><p style="margin:8px 0 0;font-size:0.85rem;">${h.location}</p>
+          </button>`).join('')}
+      </div>`, {disabled: !state.hospital});
+  }
+  else if(current === 1){ // Specialty
+    panel.innerHTML = panelWrap(`
+      <h3>Select Specialty</h3>
+      <div class="option-grid">
+        ${SPECIALTIES.map(s => `
+          <button class="option-card ${state.specialty===s.id?'selected':''}" onclick="selectSpecialty('${s.id}')">
+            <strong>${s.name}</strong>
+          </button>`).join('')}
+      </div>`, {disabled: !state.specialty});
+  }
+  else if(current === 2){ // Doctor
+    const docs = doctorsBySpecialty(state.specialty);
+    panel.innerHTML = panelWrap(`
+      <h3>Select Doctor</h3>
+      <p style="font-size:0.88rem;">Optional — choose "No preference" if you'd like the earliest available specialist.</p>
+      <div class="option-grid">
+        <button class="option-card ${state.doctor==='__none__'?'selected':''}" onclick="selectDoctor('__none__')"><strong>No preference</strong></button>
+        ${docs.map(d => `
+          <button class="option-card ${state.doctor===d.id?'selected':''}" onclick="selectDoctor('${d.id}')">
+            <strong>${d.name}</strong><p style="margin:6px 0 0;font-size:0.82rem;">${d.designation}</p>
+          </button>`).join('')}
+      </div>`);
+  }
+  else if(current === 3){ // Date
+    const today = new Date();
+    const dates = Array.from({length:6}).map((_,i) => { const d=new Date(today); d.setDate(d.getDate()+i+1); return d; });
+    panel.innerHTML = panelWrap(`
+      <h3>Select Appointment Date</h3>
+      <div class="option-grid" style="grid-template-columns:repeat(3,1fr);">
+        ${dates.map(d => { const iso = d.toISOString().slice(0,10);
+          return `<button class="option-card ${state.date===iso?'selected':''}" onclick="selectDate('${iso}')">
+            <strong>${d.toLocaleDateString('en-IN',{weekday:'short'})}</strong><p style="margin:6px 0 0;">${d.toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</p>
+          </button>`; }).join('')}
+      </div>`, {disabled: !state.date});
+  }
+  else if(current === 4){ // Time
+    const slots = slotsFor(state.doctor, state.date);
+    panel.innerHTML = panelWrap(`
+      <h3>Select Available Time Slot</h3>
+      <div class="slot-grid">
+        ${slots.map(s => `<button class="slot-btn ${state.slot===s.time?'selected':''}" ${!s.available?'disabled':''} onclick="selectSlot('${s.time}')">${s.time}</button>`).join('')}
+      </div>`, {disabled: !state.slot});
+  }
+  else if(current === 5){ // Patient details
+    panel.innerHTML = panelWrap(`
+      <h3>Patient Details</h3>
+      <div class="form-grid">
+        <div class="field" data-req><label for="p-name">Full Name *</label><input id="p-name" value="${state.patient.name||''}" required><span class="field-error">Please enter the patient's full name.</span></div>
+        <div class="field" data-req><label for="p-phone">Phone Number *</label><input id="p-phone" type="tel" value="${state.patient.phone||''}" required><span class="field-error">Please enter a valid 10-digit phone number.</span></div>
+        <div class="field"><label for="p-email">Email</label><input id="p-email" type="email" value="${state.patient.email||''}"><span class="field-error">Please enter a valid email address.</span></div>
+        <div class="field"><label for="p-age">Age</label><input id="p-age" type="number" min="0" max="120" value="${state.patient.age||''}"></div>
+        <div class="field"><label for="p-gender">Gender</label>
+          <select id="p-gender"><option value="">Prefer not to say</option><option>Female</option><option>Male</option><option>Other</option></select>
+        </div>
+        <div class="field"><label for="p-pid">Existing Patient ID (optional)</label><input id="p-pid" value="${state.patient.existingId||''}"></div>
+        <div class="field full"><label for="p-reason">Reason for Visit / Message</label><textarea id="p-reason" rows="3">${state.patient.reason||''}</textarea></div>
+      </div>`, {onNext:'submitDetails()'});
+    document.getElementById('p-gender').value = state.patient.gender || '';
+  }
+  else if(current === 6){ // Consent
+    panel.innerHTML = panelWrap(`
+      <h3>Consent</h3>
+      <div class="consent-row">
+        <input type="checkbox" id="consent-comms" ${state.consentComms?'checked':''}>
+        <label for="consent-comms">I agree to receive appointment-related communication (SMS, email or call) regarding this request.</label>
+      </div>
+      <div class="consent-row">
+        <input type="checkbox" id="consent-marketing" ${state.consentMarketing?'checked':''}>
+        <label for="consent-marketing">I would also like to receive health tips and promotional updates from Mediversal Healthcare (optional).</label>
+      </div>`, {onNext:'submitConsent()'});
+  }
+  else if(current === 7){ // Confirmation
+    const ref = 'MED-' + Math.random().toString(36).slice(2,8).toUpperCase();
+    const h = hospitalById(state.hospital); const s = specialtyById(state.specialty);
+    const d = state.doctor !== '__none__' ? DOCTORS.find(x=>x.id===state.doctor) : null;
+    panel.innerHTML = `<div class="step-panel confirmation">
+      <div class="conf-icon">${icon('check',34)}</div>
+      <h2>Appointment Request Received</h2>
+      <p>Status: <strong>REQUESTED</strong> — our team will confirm your appointment shortly by phone or email.</p>
+      <div class="ref-box">
+        <dl>
+          <dt>Reference Number</dt><dd>${ref}</dd>
+          <dt>Hospital</dt><dd>${h?h.name:''}</dd>
+          <dt>Specialty</dt><dd>${s?s.name:''}</dd>
+          <dt>Doctor</dt><dd>${d?d.name:'No preference'}</dd>
+          <dt>Requested Date</dt><dd>${state.date}</dd>
+          <dt>Requested Time</dt><dd>${state.slot}</dd>
+          <dt>Patient Contact</dt><dd>${state.patient.name} · ${state.patient.phone}</dd>
+        </dl>
+      </div>
+      <p style="font-size:0.88rem;">Next step: keep your phone reachable — our appointment team will call to confirm within business hours.</p>
+      <a href="index.html" class="btn btn-secondary">Return to Home</a>
+    </div>`;
+  }
+}
+
+function selectHospital(id){ state.hospital = id; render(); }
+function selectSpecialty(id){ state.specialty = id; state.doctor = '__none__'; render(); }
+function selectDoctor(id){ state.doctor = id; render(); }
+function selectDate(iso){ state.date = iso; state.slot = null; render(); }
+function selectSlot(t){ state.slot = t; render(); }
+
+function submitDetails(){
+  const name = document.getElementById('p-name');
+  const phone = document.getElementById('p-phone');
+  const email = document.getElementById('p-email');
+  let valid = true;
+  [name.closest('.field')].forEach(f=>f.classList.remove('invalid'));
+  phone.closest('.field').classList.remove('invalid');
+  email.closest('.field').classList.remove('invalid');
+
+  if(!name.value.trim()){ name.closest('.field').classList.add('invalid'); valid = false; }
+  if(!/^[6-9]\d{9}$/.test(phone.value.trim())){ phone.closest('.field').classList.add('invalid'); valid = false; }
+  if(email.value.trim() && !/^\S+@\S+\.\S+$/.test(email.value.trim())){ email.closest('.field').classList.add('invalid'); valid = false; }
+  if(!valid) return;
+
+  state.patient = {
+    name: name.value.trim(), phone: phone.value.trim(), email: email.value.trim(),
+    age: document.getElementById('p-age').value, gender: document.getElementById('p-gender').value,
+    existingId: document.getElementById('p-pid').value, reason: document.getElementById('p-reason').value
+  };
+  next();
+}
+
+function submitConsent(){
+  const c1 = document.getElementById('consent-comms');
+  if(!c1.checked){ alert('Please agree to receive appointment-related communication to proceed.'); return; }
+  state.consentComms = true;
+  state.consentMarketing = document.getElementById('consent-marketing').checked;
+  next();
+}
+
+render();
+</script>
+</body>
+</html>

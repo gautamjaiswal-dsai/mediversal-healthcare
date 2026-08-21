@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Hospital | Mediversal Healthcare</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main id="main-content">
+  <div class="container" id="hosp-container" style="padding-top:40px;"></div>
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+mountChrome();
+const params = new URLSearchParams(location.search);
+const h = hospitalById(params.get('slug')) || HOSPITALS[0];
+document.getElementById('page-title').textContent = `${h.name} | Mediversal Healthcare`;
+const relatedDocs = DOCTORS.filter(d => d.hospitalId === h.id).slice(0,6);
+const specIds = [...new Set(relatedDocs.map(d=>d.specialtyId))];
+
+document.getElementById('hosp-container').innerHTML = `
+  <nav class="breadcrumb"><a href="index.html">Home</a> / <a href="index.html#network-grid">Hospitals</a> / <span>${h.name}</span></nav>
+  <div class="hero-visual" style="margin-bottom:32px;">
+    <img src="${h.image}" alt="${h.name}" style="height:340px;">
+  </div>
+  <h1>${h.name}</h1>
+  <div class="nc-loc" style="margin-bottom:20px;">${icon('map-pin',16)} ${h.address || h.location}</div>
+  <p style="max-width:640px;font-size:1.05rem;">${h.description}</p>
+  <div style="display:flex;gap:14px;margin:24px 0 48px;flex-wrap:wrap;">
+    <a href="appointment.html" class="btn btn-primary">Book Appointment</a>
+    <a href="contact.html" class="btn btn-ghost">${icon('map-pin',16)} Get Directions</a>
+  </div>
+
+  ${specIds.length ? `
+  <h3>Specialties Available Here</h3>
+  <div class="specialty-grid" style="margin-bottom:48px;">
+    ${specIds.map(id => { const s = specialtyById(id); return s ? `
+      <div class="specialty-card">
+        <span class="sc-icon">${icon(s.icon,20)}</span>
+        <h4>${s.name}</h4>
+        <div class="sc-links"><a href="specialty-detail.html?id=${s.id}">Learn More</a><a href="doctors.html?specialty=${s.id}">Doctors</a></div>
+      </div>` : ''; }).join('')}
+  </div>` : ''}
+
+  ${relatedDocs.length ? `
+  <h3>Meet Our Specialists</h3>
+  <div class="doctor-grid">
+    ${relatedDocs.map(d => `
+      <div class="doctor-card">
+        <div class="dc-photo"><div class="dc-avatar-fallback">${initials(d.name)}</div></div>
+        <div class="dc-body">
+          <h4>${d.name}</h4>
+          <div class="dc-role">${d.designation}</div>
+          <div class="dc-actions">
+            <a href="doctor-profile.html?id=${d.id}" class="btn btn-ghost btn-sm">View Profile</a>
+            <a href="appointment.html?doctor=${d.id}" class="btn btn-primary btn-sm">Book</a>
+          </div>
+        </div>
+      </div>`).join('')}
+  </div>` : `<div class="empty-state"><h4>Specialist listing coming soon</h4><p>Please contact the hospital directly for current specialist availability at this unit.</p></div>`}
+`;
+</script>
+</body>
+</html>

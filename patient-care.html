@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patient Care | Mediversal Healthcare</title>
+<meta name="description" content="Patient resources — before, during and after your visit, insurance, patient rights, and brochures.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main id="main-content">
+  <section class="section">
+    <div class="container">
+      <nav class="breadcrumb"><a href="index.html">Home</a> / <span>Patient Care</span></nav>
+      <div class="section-head left" style="margin-bottom:40px;">
+        <span class="eyebrow">Patient Care</span>
+        <h1>Resources for Every Step of Your Visit</h1>
+        <p>Everything you need to know before, during and after your visit to Mediversal Healthcare.</p>
+      </div>
+
+      <div class="specialty-grid" id="journey-grid" style="margin-bottom:56px;"></div>
+
+      <div class="two-col">
+        <div>
+          <h3>Insurance & Cashless Information</h3>
+          <p>Mediversal Healthcare works with insurance providers to support cashless treatment where applicable. Please bring your insurance ID and a valid photo ID at the time of admission; our billing desk will guide you through documentation.</p>
+          <h3>Patient Rights</h3>
+          <p>Every patient has the right to respectful care, clear information about their diagnosis and treatment, informed consent, privacy, and access to their medical records.</p>
+          <h3>Patient Responsibilities</h3>
+          <p>Patients are asked to provide accurate medical history, follow prescribed treatment plans, and communicate openly with their care team.</p>
+          <h3>Brochures</h3>
+          <div class="tag-list">
+            <span class="tag-chip">Cardiac Science</span>
+            <span class="tag-chip">General Surgery</span>
+          </div>
+          <p style="font-size:0.85rem;margin-top:10px;">Additional department brochures are added as they become available.</p>
+        </div>
+        <aside>
+          <div class="step-panel">
+            <h4>Need Help?</h4>
+            <p style="font-size:0.9rem;">Our support team can answer questions about your visit, billing, or insurance.</p>
+            <a href="contact.html" class="btn btn-primary btn-block">Contact Support</a>
+          </div>
+        </aside>
+      </div>
+
+      <h3 style="margin-top:48px;">Frequently Asked Questions</h3>
+      <div id="faq-list"></div>
+    </div>
+  </section>
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+mountChrome();
+document.getElementById('journey-grid').innerHTML = [
+  {icon:'clipboard-pulse',title:'Before Your Visit',text:'Bring ID, prior records and a list of current medications.'},
+  {icon:'stethoscope',title:'During Your Visit',text:'Registration, consultation, diagnostics and admission guidance.'},
+  {icon:'heart-pulse',title:'After Your Visit',text:'Discharge summary, follow-up care and prescription guidance.'},
+  {icon:'shield',title:'Hospital Guidelines',text:'Visiting hours, safety protocols and facility information.'}
+].map(c => `<div class="specialty-card"><span class="sc-icon">${icon(c.icon,20)}</span><h4>${c.title}</h4><p>${c.text}</p></div>`).join('');
+
+document.getElementById('faq-list').innerHTML = [
+  ['How do I book an appointment?','Use the Book Appointment button on any page, or call the hospital directly.'],
+  ['What should I bring to my first visit?','A valid photo ID, any previous medical records, and your insurance card if applicable.'],
+  ['Is emergency care available at all hours?','Yes, Emergency & Trauma Care is available 24/7 at Mediversal Multi Super Speciality Hospital.']
+].map(([q,a]) => `<div style="border-bottom:1px solid var(--line);padding:16px 0;"><strong>${q}</strong><p style="margin:6px 0 0;">${a}</p></div>`).join('');
+</script>
+</body>
+</html>

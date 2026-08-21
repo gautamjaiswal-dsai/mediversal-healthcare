@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find a Doctor | Mediversal Healthcare</title>
+<meta name="description" content="Search and find specialist doctors across the Mediversal Healthcare network in Patna, filtered by specialty, hospital and language.">
+<link rel="canonical" href="https://www.mediversal.in/doctors">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main id="main-content">
+  <section class="section" style="padding-bottom:0;">
+    <div class="container">
+      <nav class="breadcrumb"><a href="index.html">Home</a> / <span>Doctors</span></nav>
+      <div class="section-head left" style="margin-bottom:32px;">
+        <span class="eyebrow">Doctor Directory</span>
+        <h1>Find the Right Doctor</h1>
+        <p>Search by doctor name or specialty across the Mediversal Healthcare network.</p>
+      </div>
+      <div class="search-box" style="max-width:100%;margin-bottom:28px;">
+        <input id="doc-search" class="search-input" type="text" placeholder="Search by doctor name or specialty…" aria-label="Search doctors">
+        <button class="search-icon-btn" aria-label="Search"></button>
+      </div>
+      <div class="doctor-filters">
+        <select id="f-specialty" aria-label="Filter by specialty"><option value="">All Specialties</option></select>
+        <select id="f-hospital" aria-label="Filter by hospital"><option value="">All Hospitals</option></select>
+        <select id="f-language" aria-label="Filter by language">
+          <option value="">All Languages</option><option value="English">English</option><option value="Hindi">Hindi</option>
+        </select>
+      </div>
+      <div id="doc-count" style="font-size:0.88rem;color:var(--charcoal-soft);margin-bottom:18px;"></div>
+      <div class="doctor-grid" id="doctor-grid"></div>
+    </div>
+  </section>
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+mountChrome('doctors');
+
+const fSpecialty = document.getElementById('f-specialty');
+const fHospital = document.getElementById('f-hospital');
+const fLanguage = document.getElementById('f-language');
+const grid = document.getElementById('doctor-grid');
+const countEl = document.getElementById('doc-count');
+const search = document.getElementById('doc-search');
+
+SPECIALTIES.forEach(s => fSpecialty.insertAdjacentHTML('beforeend', `<option value="${s.id}">${s.name}</option>`));
+HOSPITALS.forEach(h => fHospital.insertAdjacentHTML('beforeend', `<option value="${h.id}">${h.name}</option>`));
+
+// Preselect specialty from ?specialty= URL param (used by "Find a Doctor" links)
+const params = new URLSearchParams(location.search);
+if(params.get('specialty')) fSpecialty.value = params.get('specialty');
+
+function doctorCard(d){
+  const sp = specialtyById(d.specialtyId);
+  const hosp = hospitalById(d.hospitalId);
+  return `
+  <div class="doctor-card">
+    <div class="dc-photo"><div class="dc-avatar-fallback">${initials(d.name)}</div></div>
+    <div class="dc-body">
+      <h4>${d.name}</h4>
+      <div class="dc-role">${d.designation}</div>
+      <div class="dc-meta">
+        ${sp ? sp.name : d.department} &middot; ${hosp ? hosp.location : ''}<br>
+        ${d.qualifications.join(', ')}
+      </div>
+      <div class="dc-actions">
+        <a href="doctor-profile.html?id=${d.id}" class="btn btn-ghost btn-sm">View Profile</a>
+        <a href="appointment.html?doctor=${d.id}" class="btn btn-primary btn-sm">Book</a>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderDoctors(){
+  grid.innerHTML = Array.from({length:6}).map(()=>'<div class="skeleton skeleton-card"></div>').join('');
+  setTimeout(() => {
+    const q = search.value.trim().toLowerCase();
+    const results = DOCTORS.filter(d => {
+      const matchesQuery = !q || d.name.toLowerCase().includes(q) || (specialtyById(d.specialtyId)||{}).name?.toLowerCase().includes(q);
+      const matchesSpecialty = !fSpecialty.value || d.specialtyId === fSpecialty.value;
+      const matchesHospital = !fHospital.value || d.hospitalId === fHospital.value;
+      const matchesLanguage = !fLanguage.value || d.languages.includes(fLanguage.value);
+      return matchesQuery && matchesSpecialty && matchesHospital && matchesLanguage;
+    });
+    countEl.textContent = `${results.length} doctor${results.length===1?'':'s'} found`;
+    if(results.length === 0){
+      grid.innerHTML = '';
+      grid.insertAdjacentHTML('beforebegin', `<div class="empty-state"><h4>No doctors match your filters</h4><p>Try clearing a filter or searching a different specialty.</p></div>`);
+    } else {
+      document.querySelectorAll('.empty-state').forEach(e=>e.remove());
+      grid.innerHTML = results.map(doctorCard).join('');
+    }
+  }, 350);
+}
+
+[fSpecialty, fHospital, fLanguage].forEach(el => el.addEventListener('change', renderDoctors));
+let dt;
+search.addEventListener('input', () => { clearTimeout(dt); dt = setTimeout(renderDoctors, 300); });
+renderDoctors();
+</script>
+</body>
+</html>

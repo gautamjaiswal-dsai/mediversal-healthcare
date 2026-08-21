@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Doctor Profile | Mediversal Healthcare</title>
+<meta name="description" content="Doctor profile — qualifications, expertise and hospital location at Mediversal Healthcare.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main id="main-content">
+  <section class="section">
+    <div class="container" id="profile-container">
+      <div class="skeleton" style="height:400px;"></div>
+    </div>
+  </section>
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+mountChrome('doctors');
+const params = new URLSearchParams(location.search);
+const d = DOCTORS.find(x => x.id === params.get('id')) || DOCTORS[0];
+const sp = specialtyById(d.specialtyId);
+const hosp = hospitalById(d.hospitalId);
+document.getElementById('page-title').textContent = `${d.name} — ${d.designation} | Mediversal Healthcare`;
+
+const related = DOCTORS.filter(x => x.specialtyId === d.specialtyId && x.id !== d.id).slice(0,3);
+
+document.getElementById('profile-container').innerHTML = `
+  <nav class="breadcrumb"><a href="index.html">Home</a> / <a href="doctors.html">Doctors</a> / <span>${d.name}</span></nav>
+  <div class="two-col">
+    <div>
+      <div class="step-panel" style="display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap;margin-bottom:32px;">
+        <div class="dc-avatar-fallback" style="width:100px;height:100px;font-size:1.9rem;flex-shrink:0;">${initials(d.name)}</div>
+        <div style="flex:1;min-width:240px;">
+          <h1 style="margin-bottom:4px;">${d.name}</h1>
+          <p style="color:var(--teal);font-weight:700;margin-bottom:10px;">${d.designation}</p>
+          <div class="tag-list" style="margin-bottom:16px;">
+            <span class="tag-chip">${sp ? sp.name : d.department}</span>
+            <span class="tag-chip">${hosp ? hosp.name : ''}</span>
+            ${d.languages.map(l=>`<span class="tag-chip">${l}</span>`).join('')}
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <a href="appointment.html?doctor=${d.id}" class="btn btn-primary">Book Appointment</a>
+            <a href="tel:0612-3500111" class="btn btn-ghost">${icon('phone',16)} Emergency</a>
+          </div>
+        </div>
+      </div>
+
+      <h3>About</h3>
+      <p>${d.name} serves as ${d.designation.toLowerCase()} at ${hosp ? hosp.name : 'Mediversal Healthcare'}, specializing in ${sp ? sp.name.toLowerCase() : d.department.toLowerCase()}.</p>
+
+      <h3>Clinical Expertise</h3>
+      <div class="tag-list" style="margin-bottom:28px;">
+        <span class="tag-chip">${sp ? sp.name : d.department}</span>
+      </div>
+
+      <h3>Education & Qualifications</h3>
+      <ul style="margin-bottom:28px;">
+        ${d.qualifications.map(q=>`<li style="padding:6px 0;border-bottom:1px solid var(--line);">${q}</li>`).join('')}
+      </ul>
+
+      <h3>Languages Spoken</h3>
+      <p>${d.languages.join(', ')}</p>
+
+      <h3>Hospital Location</h3>
+      <p>${hosp ? hosp.name + ' — ' + hosp.location : ''}</p>
+    </div>
+
+    <aside>
+      <div class="step-panel" style="position:sticky;top:100px;">
+        <h4 style="margin-bottom:14px;">Book a Consultation</h4>
+        <p style="font-size:0.9rem;">Schedule an appointment with ${d.name.replace('Dr. ','Dr. ')} at ${hosp ? hosp.name : ''}.</p>
+        <a href="appointment.html?doctor=${d.id}" class="btn btn-primary btn-block">Book Appointment</a>
+        <p style="font-size:0.8rem;margin-top:14px;">Available slots are confirmed at the time of scheduling and shown only when connected to the live booking system.</p>
+      </div>
+    </aside>
+  </div>
+
+  ${related.length ? `
+  <div style="margin-top:56px;">
+    <h3>Related Doctors</h3>
+    <div class="doctor-grid">
+      ${related.map(r => `
+        <div class="doctor-card">
+          <div class="dc-photo"><div class="dc-avatar-fallback">${initials(r.name)}</div></div>
+          <div class="dc-body">
+            <h4>${r.name}</h4>
+            <div class="dc-role">${r.designation}</div>
+            <div class="dc-actions">
+              <a href="doctor-profile.html?id=${r.id}" class="btn btn-ghost btn-sm">View Profile</a>
+              <a href="appointment.html?doctor=${r.id}" class="btn btn-primary btn-sm">Book</a>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>` : ''}
+`;
+</script>
+</body>
+</html>
