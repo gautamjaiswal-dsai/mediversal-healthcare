@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mediversal Healthcare — Advanced Healthcare. Human Care.</title>
+<meta name="description" content="Mediversal Healthcare — a modern multi-speciality hospital network in Patna offering advanced specialist care, maternal health, wellness diagnostics and homecare services.">
+<link rel="canonical" href="https://www.mediversal.in/">
+<meta property="og:title" content="Mediversal Healthcare — Advanced Healthcare. Human Care.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MedicalOrganization",
+  "name": "Mediversal Healthcare",
+  "url": "https://www.mediversal.in/",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Doctors' Colony, Kankarbagh",
+    "addressLocality": "Patna",
+    "addressRegion": "Bihar",
+    "postalCode": "800020",
+    "addressCountry": "IN"
+  },
+  "email": "info@mediversal.in"
+}
+</script>
+</head>
+<body>
+<div id="site-header"></div>
+
+<main id="main-content">
+
+  <!-- SECTION 1: HERO -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="eyebrow">Mediversal Healthcare</span>
+        <h1>Advanced Healthcare.<br>Human Care.</h1>
+        <p style="font-size:1.1rem;max-width:480px;">Expert specialists, advanced medical technology and compassionate healthcare designed around every patient.</p>
+        <div class="hero-cta-row">
+          <a href="appointment.html" class="btn btn-primary">Book Appointment</a>
+          <a href="doctors.html" class="btn btn-secondary">Find a Doctor</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <img src="https://images.unsplash.com/photo-1551076805-e1869033e561?q=80&w=1200&auto=format&fit=crop" alt="Mediversal specialist consulting with a patient">
+        <div class="floating-card fc-1"><span class="fc-icon"></span>24/7 Support</div>
+        <div class="floating-card fc-2"><span class="fc-icon"></span>Expert Specialists</div>
+        <div class="floating-card fc-3"><span class="fc-icon"></span>Advanced Care</div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: QUICK ACTIONS -->
+    <div class="container">
+      <div class="quick-actions" id="quick-actions"></div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: SMART SEARCH -->
+  <section class="search-section">
+    <div class="container">
+      <div class="section-head">
+        <h2>How can we help you today?</h2>
+        <p>Search doctors, specialties, services or health topics across the Mediversal network.</p>
+      </div>
+      <div class="search-box">
+        <input id="home-search" class="search-input" type="text" placeholder="Search doctor, specialty, service or health topic…" aria-label="Search">
+        <button class="search-icon-btn" aria-label="Search" onclick="document.getElementById('home-search').focus()"></button>
+      </div>
+      <div id="home-search-results" class="search-results" role="listbox"></div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: HEALTHCARE NETWORK -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow" style="justify-content:center;">Our Network</span>
+        <h2>Healthcare for Every Stage of Life</h2>
+        <p>Four dedicated centres, one connected standard of care.</p>
+      </div>
+      <div class="network-grid" id="network-grid"></div>
+    </div>
+  </section>
+
+  <div class="container" id="pulse-slot-1"></div>
+
+  <!-- SECTION 5: SPECIALTIES -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow" style="justify-content:center;">Specialties</span>
+        <h2>Specialized Care.<br>One Trusted Destination.</h2>
+      </div>
+      <div class="specialty-grid" id="specialty-grid"></div>
+      <div class="text-center" style="margin-top:40px;">
+        <a href="specialties.html" class="btn btn-ghost">Explore All Specialties</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- EMERGENCY -->
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="emergency-banner">
+        <div style="display:flex;gap:20px;align-items:center;">
+          <span class="eb-icon" id="eb-icon"></span>
+          <div>
+            <h3>Medical Emergency?</h3>
+            <p>For urgent medical care, contact the hospital or visit the nearest emergency department immediately.</p>
+          </div>
+        </div>
+        <a href="tel:0612-3500111" class="btn btn-emergency">Call Emergency</a>
+      </div>
+      <p style="font-size:0.82rem;margin-top:16px;">This website provides general healthcare information and service access. It is not a substitute for professional medical advice, diagnosis, treatment, or emergency care.</p>
+    </div>
+  </section>
+
+  <!-- APP PROMO -->
+  <section class="section">
+    <div class="container">
+      <div class="app-promo">
+        <div>
+          <span class="eyebrow" style="color:#8fd6d4;">Mediversal App</span>
+          <h2>Healthcare in your pocket.</h2>
+          <p>Book appointments, order medicines, schedule a home sample collection or start a video consultation — all from one app.</p>
+          <div class="app-features" id="app-features"></div>
+          <div class="store-badges">
+            <a href="#" class="store-badge">App Store</a>
+            <a href="#" class="store-badge">Google Play</a>
+          </div>
+        </div>
+        <div class="phone-mock"><div class="pm-screen"></div></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+  mountChrome('home');
+  document.getElementById('pulse-slot-1').innerHTML = pulseDividerSVG();
+  document.querySelectorAll('.floating-card .fc-icon')[0].innerHTML = icon('clock',18);
+  document.querySelectorAll('.floating-card .fc-icon')[1].innerHTML = icon('stethoscope',18);
+  document.querySelectorAll('.floating-card .fc-icon')[2].innerHTML = icon('shield',18);
+
+  document.getElementById('quick-actions').innerHTML = [
+    {icon:'user', label:'Find a Doctor', href:'doctors.html'},
+    {icon:'calendar', label:'Book Appointment', href:'appointment.html'},
+    {icon:'stethoscope', label:'Explore Specialties', href:'specialties.html'},
+    {icon:'siren', label:'Emergency Support', href:'contact.html', emergency:true},
+    {icon:'map-pin', label:'Get Directions', href:'contact.html'}
+  ].map(a => `<a href="${a.href}" class="qa-card ${a.emergency?'qa-emergency':''}"><span class="qa-icon">${icon(a.icon,24)}</span><h4>${a.label}</h4></a>`).join('');
+
+  document.getElementById('network-grid').innerHTML = HOSPITALS.map(h => `
+    <div class="network-card">
+      <div class="nc-media"><img src="${h.image}" alt="${h.name}"></div>
+      <div class="nc-body">
+        <h3 style="font-size:1.3rem;">${h.name}</h3>
+        <p>${h.description}</p>
+        <div class="nc-loc">${icon('map-pin',15)} ${h.location}</div>
+        <div class="nc-actions">
+          <a href="hospital-detail.html?slug=${h.slug}" class="btn btn-secondary btn-sm">Explore</a>
+          <a href="appointment.html" class="btn btn-primary btn-sm">Book Appointment</a>
+        </div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('specialty-grid').innerHTML = SPECIALTIES.filter(s=>s.featured).map(s => `
+    <div class="specialty-card">
+      <span class="sc-icon">${icon(s.icon,22)}</span>
+      <h4>${s.name}</h4>
+      <p>${s.short}</p>
+      <div class="sc-links">
+        <a href="specialty-detail.html?id=${s.id}">Learn More</a>
+        <a href="doctors.html?specialty=${s.id}">Find a Doctor</a>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('eb-icon').innerHTML = icon('siren', 26);
+
+  document.getElementById('app-features').innerHTML = [
+    'Medicine delivery','Home sample collection','Video consultation','Homecare services'
+  ].map(f => `<div class="app-feature">${icon('check',16)} ${f}</div>`).join('');
+
+  initSmartSearch('home-search','home-search-results');
+</script>
+</body>
+</html>
